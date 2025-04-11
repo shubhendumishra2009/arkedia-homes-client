@@ -1,0 +1,16 @@
+# Environment files
+server/.env
+server - Copy/.env
+web/.env*
+web/.env.local
+.next/
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+
+# Editor files
+.idea/
+.vscode/

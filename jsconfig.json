@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/components/*": ["components/*"],
+        "@/styles/*": ["styles/*"],
+        "@/utils/*": ["utils/*"],
+        "@/contexts/*": ["contexts/*"],
+        "@/hooks/*": ["hooks/*"],
+        "@/services/*": ["services/*"]
+      },
+      "typeRoots": ["./node_modules/@types"]
+    },
+    "exclude": ["node_modules"]
+  }

@@ -1,0 +1,127 @@
+.hero {
+  background-color: #2E5077;
+  background-image: linear-gradient(rgba(46, 80, 119, 0.85), rgba(26, 58, 95, 0.95)), url('/assets/banner.png');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 120px 0;
+  text-align: center;
+  position: relative;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.heroContent {
+  z-index: 1;
+  position: relative;
+  animation: slideUp 0.8s ease-out;
+}
+
+.featuresSection {
+  padding: 100px 0;
+  background-color: #F8F9FA;
+  position: relative;
+}
+
+.featuresSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #2E5077, #4ECDC4);
+}
+
+.roomTypesSection {
+  background-color: #FFFFFF;
+  padding: 100px 0;
+  position: relative;
+}
+
+.testimonialSection {
+  padding: 100px 0;
+  background-color: #F0F4F8;
+  position: relative;
+}
+
+.testimonialSection::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #4ECDC4, #E85F5C);
+}
+
+.ctaSection {
+  background-color: #2E5077;
+  background-image: linear-gradient(135deg, #2E5077 0%, #1A3A5F 100%);
+  color: white;
+  padding: 100px 0;
+  text-align: center;
+  position: relative;
+  box-shadow: inset 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.featureCard {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.featureCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.gradientButton {
+  background: linear-gradient(90deg, #E85F5C, #FF8A87);
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(232, 95, 92, 0.3);
+}
+
+.gradientButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 12px rgba(232, 95, 92, 0.4);
+}
+
+.outlineButton {
+  border: 2px solid #2E5077;
+  color: #2E5077;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.outlineButton:hover {
+  background-color: rgba(46, 80, 119, 0.1);
+  transform: translateY(-2px);
+}
+
+.sectionTitle {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 40px;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #2E5077, #4ECDC4);
+  border-radius: 2px;
+}
