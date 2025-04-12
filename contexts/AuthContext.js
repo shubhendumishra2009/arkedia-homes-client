@@ -27,11 +27,21 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // API base URL
+  console.log('All environment variables:', process.env);
+  console.log('Build time environment:', {
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NODE_ENV: process.env.NODE_ENV
+  });
   console.log('Environment variables:', {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NODE_ENV: process.env.NODE_ENV
   });
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_URL) {
+  console.error('NEXT_PUBLIC_API_URL is not defined!');
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is required');
+}
+  //const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
   
   
   // Register a new user
