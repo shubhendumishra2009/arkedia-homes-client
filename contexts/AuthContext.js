@@ -27,8 +27,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // API base URL
+  console.log('Environment variables:', {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NODE_ENV: process.env.NODE_ENV
+  });
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
+  
+  
   // Register a new user
   const register = async (userData) => {
     try {
