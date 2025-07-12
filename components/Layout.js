@@ -171,7 +171,6 @@ const Layout = ({ children }) => {
     { name: 'About', path: '/about' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'Services', path: '/services' },
-    { name: 'Pricing', path: '/pricing' },
     { name: 'Contact', path: '/contact' },
   ];
 
