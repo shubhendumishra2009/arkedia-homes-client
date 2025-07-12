@@ -110,25 +110,18 @@ export default function RoomsManagement() {
     description: '',
     status: 'available',
     pricing: {
-      short_term_price: '',
       medium_term_price: '',
       long_term_price: '',
-      short_term_price_with_fooding: '',
       medium_term_price_with_fooding: '',
       long_term_price_with_fooding: '',
-      breakfast_only_short_term: '',
       breakfast_only_medium_term: '',
       breakfast_only_long_term: '',
-      lunch_only_short_term: '',
       lunch_only_medium_term: '',
       lunch_only_long_term: '',
-      dinner_only_short_term: '',
       dinner_only_medium_term: '',
       dinner_only_long_term: '',
-      bf_and_dinner_short_term: '',
       bf_and_dinner_medium_term: '',
       bf_and_dinner_long_term: '',
-      lunch_and_dinner_short_term: '',
       lunch_and_dinner_medium_term: '',
       lunch_and_dinner_long_term: ''
     }
@@ -693,7 +686,7 @@ export default function RoomsManagement() {
                               <TableHead>
                                 <TableRow>
                                   <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Meal Plan</TableCell>
-                                  <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Short Term (&lt; 1 month)</TableCell>
+                                  
                                   <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Medium Term (1-4 months)</TableCell>
                                   <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Long Term (5+ months)</TableCell>
                                 </TableRow>
@@ -701,43 +694,43 @@ export default function RoomsManagement() {
                               <TableBody>
                                 <TableRow>
                                   <TableCell>Without Fooding</TableCell>
-                                  <TableCell>₹{room.pricing?.short_term_price || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.medium_term_price || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.long_term_price || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>With Fooding (All Meals)</TableCell>
-                                  <TableCell>₹{room.pricing?.short_term_price_with_fooding || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.medium_term_price_with_fooding || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.long_term_price_with_fooding || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>Breakfast Only</TableCell>
-                                  <TableCell>₹{room.pricing?.breakfast_only_short_term || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.breakfast_only_medium_term || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.breakfast_only_long_term || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>Lunch Only</TableCell>
-                                  <TableCell>₹{room.pricing?.lunch_only_short_term || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.lunch_only_medium_term || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.lunch_only_long_term || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>Dinner Only</TableCell>
-                                  <TableCell>₹{room.pricing?.dinner_only_short_term || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.dinner_only_medium_term || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.dinner_only_long_term || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>BF and Dinner</TableCell>
-                                  <TableCell>₹{room.pricing?.bf_and_dinner_short_term || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.bf_and_dinner_medium_term || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.bf_and_dinner_long_term || '-'}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                   <TableCell>Lunch and Dinner</TableCell>
-                                  <TableCell>₹{room.pricing?.lunch_and_dinner_short_term || '-'}</TableCell>
+                                  
                                   <TableCell>₹{room.pricing?.lunch_and_dinner_medium_term || '-'}</TableCell>
                                   <TableCell>₹{room.pricing?.lunch_and_dinner_long_term || '-'}</TableCell>
                                 </TableRow>
@@ -892,251 +885,193 @@ export default function RoomsManagement() {
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="h6" gutterBottom>
-  Tariff (Meal Plan Pricing)
-</Typography>
+                  Tariff (Meal Plan Pricing)
+                </Typography>
+                  {/* Without Fooding */}
+                  <Typography variant="subtitle1" sx={{ mt: 2 }}>Without Fooding</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      name="medium_term_price"
+                      label="Medium Term Price (1-4 months)"
+                      fullWidth
+                      value={formData.pricing?.medium_term_price || ''}
+                      onChange={e => handleInputChange(e, 'pricing')}
+                      disabled={!propertySelected}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      name="long_term_price"
+                      label="Long Term Price (5+ months)"
+                      fullWidth
+                      value={formData.pricing?.long_term_price || ''}
+                      onChange={e => handleInputChange(e, 'pricing')}
+                      disabled={!propertySelected}
+                    />
+                  </Grid>
+                </Grid>
 
-{/* Without Fooding */}
-<Typography variant="subtitle1" sx={{ mt: 2 }}>Without Fooding</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="short_term_price"
-      label="Short Term Price (< 1 month)"
-      fullWidth
-      value={formData.pricing?.short_term_price || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="medium_term_price"
-      label="Medium Term Price (1-4 months)"
-      fullWidth
-       value={formData.pricing?.medium_term_price || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="long_term_price"
-      label="Long Term Price (5+ months)"
-      fullWidth
-       value={formData.pricing?.long_term_price || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
-</Grid>
+                  {/* With Fooding (All Meals) */}
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>With Fooding (All Meals: BF + Lunch + Dinner)</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      name="medium_term_price_with_fooding"
+                      label="Medium Term Price With Fooding (1-4 months)"
+                      fullWidth
+                      value={formData.pricing?.medium_term_price_with_fooding || ''}
+                      onChange={e => handleInputChange(e, 'pricing')}
+                      disabled={!propertySelected}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      name="long_term_price_with_fooding"
+                      label="Long Term Price With Fooding (5+ months)"
+                      fullWidth
+                      value={formData.pricing?.long_term_price_with_fooding || ''}
+                      onChange={e => handleInputChange(e, 'pricing')}
+                      disabled={!propertySelected}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}></Grid>
+                </Grid>
 
-{/* With Fooding (All Meals) */}
-<Typography variant="subtitle1" sx={{ mt: 3 }}>With Fooding (All Meals: BF + Lunch + Dinner)</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="short_term_price_with_fooding"
-      label="Short Term Price With Fooding (< 1 month)"
-      fullWidth
-      value={formData.pricing?.short_term_price_with_fooding || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="medium_term_price_with_fooding"
-      label="Medium Term Price With Fooding (1-4 months)"
-      fullWidth
-       value={formData.pricing?.medium_term_price_with_fooding || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="long_term_price_with_fooding"
-      label="Long Term Price With Fooding (5+ months)"
-      fullWidth
-      value={formData.pricing?.long_term_price_with_fooding || ''}
-       onChange={e => handleInputChange(e, 'pricing')}
-       disabled={!propertySelected}
-     />
-  </Grid>
+                  {/* With Fooding: Meal Plan Combinations */}
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>Breakfast Only</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+  <TextField
+    name="breakfast_only_medium_term"
+    label="Breakfast Only Medium Term (1-4 months)"
+    placeholder="Breakfast Only Medium Term (1-4 months)"
+    fullWidth
+    value={formData.pricing?.breakfast_only_medium_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-
-{/* With Fooding: Meal Plan Combinations */}
-<Typography variant="subtitle1" sx={{ mt: 3 }}>Breakfast Only</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="breakfast_only_short_term"
-      label="Breakfast Only Short Term"
-      fullWidth
-      value={formData.pricing?.breakfast_only_short_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="breakfast_only_medium_term"
-      label="Breakfast Only Medium Term"
-      fullWidth
-      value={formData.pricing?.breakfast_only_medium_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="breakfast_only_long_term"
-      label="Breakfast Only Long Term"
-      fullWidth
-      value={formData.pricing?.breakfast_only_long_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    name="breakfast_only_long_term"
+    label="Breakfast Only Long Term (5+ months)"
+    placeholder="Breakfast Only Long Term (5+ months)"
+    fullWidth
+    value={formData.pricing?.breakfast_only_long_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-<Typography variant="subtitle1" sx={{ mt: 3 }}>Lunch Only</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_only_short_term"
-      label="Lunch Only Short Term"
-      fullWidth
-      value={formData.pricing?.lunch_only_short_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_only_medium_term"
-      label="Lunch Only Medium Term"
-      fullWidth
-      value={formData.pricing?.lunch_only_medium_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_only_long_term"
-      label="Lunch Only Long Term"
-      fullWidth
-      value={formData.pricing?.lunch_only_long_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
+                </Grid>
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>Lunch Only</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+  <TextField
+    name="lunch_only_medium_term"
+    label="Lunch Only Medium Term (1-4 months)"
+    placeholder="Lunch Only Medium Term (1-4 months)"
+    fullWidth
+    value={formData.pricing?.lunch_only_medium_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-<Typography variant="subtitle1" sx={{ mt: 3 }}>Dinner Only</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="dinner_only_short_term"
-      label="Dinner Only Short Term"
-      fullWidth
-      value={formData.pricing?.dinner_only_short_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="dinner_only_medium_term"
-      label="Dinner Only Medium Term"
-      fullWidth
-      value={formData.pricing?.dinner_only_medium_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="dinner_only_long_term"
-      label="Dinner Only Long Term"
-      fullWidth
-      value={formData.pricing?.dinner_only_long_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    name="lunch_only_long_term"
+    label="Lunch Only Long Term (5+ months)"
+    placeholder="Lunch Only Long Term (5+ months)"
+    fullWidth
+    value={formData.pricing?.lunch_only_long_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-<Typography variant="subtitle1" sx={{ mt: 3 }}>BF and Dinner</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="bf_and_dinner_short_term"
-      label="BF and Dinner Short Term"
-      fullWidth
-      value={formData.pricing?.bf_and_dinner_short_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="bf_and_dinner_medium_term"
-      label="BF and Dinner Medium Term"
-      fullWidth
-      value={formData.pricing?.bf_and_dinner_medium_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="bf_and_dinner_long_term"
-      label="BF and Dinner Long Term"
-      fullWidth
-      value={formData.pricing?.bf_and_dinner_long_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
+                </Grid>
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>Dinner Only</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+  <TextField
+    name="dinner_only_medium_term"
+    label="Dinner Only Medium Term (1-4 months)"
+    placeholder="Dinner Only Medium Term (1-4 months)"
+    fullWidth
+    value={formData.pricing?.dinner_only_medium_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-<Typography variant="subtitle1" sx={{ mt: 3 }}>Lunch and Dinner</Typography>
-<Grid container spacing={2}>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_and_dinner_short_term"
-      label="Lunch and Dinner Short Term"
-      fullWidth
-      value={formData.pricing?.lunch_and_dinner_short_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_and_dinner_medium_term"
-      label="Lunch and Dinner Medium Term"
-      fullWidth
-      value={formData.pricing?.lunch_and_dinner_medium_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
-  <Grid item xs={12} sm={4}>
-    <TextField
-      name="lunch_and_dinner_long_term"
-      label="Lunch and Dinner Long Term"
-      fullWidth
-      value={formData.pricing?.lunch_and_dinner_long_term || ''}
-      onChange={e => handleInputChange(e, 'pricing')}
-      disabled={!propertySelected}
-    />
-  </Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    name="dinner_only_long_term"
+    label="Dinner Only Long Term (5+ months)"
+    placeholder="Dinner Only Long Term (5+ months)"
+    fullWidth
+    value={formData.pricing?.dinner_only_long_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
 </Grid>
-
+                </Grid>
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>BF and Dinner</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+  <TextField
+    name="bf_and_dinner_medium_term"
+    label="BF and Dinner Medium Term (1-4 months)"
+    placeholder="BF and Dinner Medium Term (1-4 months)"
+    fullWidth
+    value={formData.pricing?.bf_and_dinner_medium_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    name="bf_and_dinner_long_term"
+    label="BF and Dinner Long Term (5+ months)"
+    placeholder="BF and Dinner Long Term (5+ months)"
+    fullWidth
+    value={formData.pricing?.bf_and_dinner_long_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
+</Grid>
+                </Grid>
+                  <Typography variant="subtitle1" sx={{ mt: 3 }}>Lunch and Dinner</Typography>
+                  <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+  <TextField
+    name="lunch_and_dinner_medium_term"
+    label="Lunch and Dinner Medium Term (1-4 months)"
+    placeholder="Lunch and Dinner Medium Term (1-4 months)"
+    fullWidth
+    value={formData.pricing?.lunch_and_dinner_medium_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    name="lunch_and_dinner_long_term"
+    label="Lunch and Dinner Long Term (5+ months)"
+    placeholder="Lunch and Dinner Long Term (5+ months)"
+    fullWidth
+    value={formData.pricing?.lunch_and_dinner_long_term || ''}
+    onChange={e => handleInputChange(e, 'pricing')}
+    disabled={!propertySelected}
+  />
+</Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle1" gutterBottom>
                   Features
                 </Typography>
                 <Grid container spacing={2}>
+
                   <Grid item xs={6} sm={4}>
                     <FormControlLabel
                       control={
@@ -1269,18 +1204,14 @@ export default function RoomsManagement() {
               <Typography variant="subtitle1" gutterBottom>
                 <strong>Room Category:</strong> {pricingDetails.roomCategory.charAt(0).toUpperCase() + pricingDetails.roomCategory.slice(1)}
               </Typography>
-              
               <Divider sx={{ my: 2 }} />
-              
               <Typography variant="h6" gutterBottom>
                 Pricing Structure
               </Typography>
-              
               <Table size="small" sx={{ background: '#f8f8f8', borderRadius: 2, mt: 2 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell>Meal Plan</TableCell>
-                    <TableCell>Short Term</TableCell>
                     <TableCell>Medium Term</TableCell>
                     <TableCell>Long Term</TableCell>
                   </TableRow>
@@ -1288,43 +1219,36 @@ export default function RoomsManagement() {
                 <TableBody>
                   <TableRow>
                     <TableCell>BF and Dinner</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.bf_and_dinner_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.bf_and_dinner_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.bf_and_dinner_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Lunch and Dinner</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.lunch_and_dinner_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.lunch_and_dinner_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.lunch_and_dinner_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Dinner Only</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.dinner_only_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.dinner_only_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.dinner_only_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Lunch Only</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.lunch_only_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.lunch_only_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.lunch_only_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Breakfast Only</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.breakfast_only_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.breakfast_only_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.breakfast_only_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Non-Veg</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.non_veg_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.non_veg_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.non_veg_long_term || '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Veg</TableCell>
-                    <TableCell>₹{pricingDetails.pricing?.veg_short_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.veg_medium_term || '-'}</TableCell>
                     <TableCell>₹{pricingDetails.pricing?.veg_long_term || '-'}</TableCell>
                   </TableRow>
@@ -1332,6 +1256,7 @@ export default function RoomsManagement() {
               </Table>
             </Box>
           )}
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClosePricingDialog}>Close</Button>

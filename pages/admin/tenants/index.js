@@ -117,18 +117,12 @@ function TenantsManagement() {
     if (!room_id || !lease_start_date || !lease_end_date) return '';
     const room = roomsList.find(r => r.id === room_id);
     if (!room) return '';
-    // Use pricing logic from backend: shortTerm, mediumTerm, longTerm
     const start = new Date(lease_start_date);
     const end = new Date(lease_end_date);
     if (isNaN(start) || isNaN(end) || end <= start) return '';
     const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
     let price = '';
-    if (diffDays < 30) {
-      price = (room.short_term_price !== undefined && room.short_term_price !== null)
-        ? room.short_term_price
-        : (room.pricing?.shortTerm || (room.base_rent ? room.base_rent * 1.2 : ''));
-    } else if (diffMonths < 5) {
+    if (diffMonths < 5) {
       price = (room.medium_term_price !== undefined && room.medium_term_price !== null)
         ? room.medium_term_price
         : (room.pricing?.mediumTerm || (room.base_rent ? room.base_rent * 1.1 : ''));
@@ -147,8 +141,6 @@ function TenantsManagement() {
     const end = new Date(lease_end_date);
     if (isNaN(start) || isNaN(end) || end <= start) return 'Invalid lease period.';
     const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    if (diffDays < 30) return 'Short Term Pricing (below 1 month)';
     if (diffMonths < 5) return 'Medium Term Pricing (1-5 months)';
     return 'Long Term Pricing (5+ months)';
   }
