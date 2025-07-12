@@ -4,11 +4,11 @@ import { Grid, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui
 import { useState } from 'react';
 
 export default function RoomFilters({
-  properties,
-  filter,
-  setFilter,
-  availableRoomNumbers,
-  statusOptions
+  properties = [],
+  filter = {},
+  setFilter = () => {},
+  availableRoomNumbers = [],
+  statusOptions = []
 }) {
   const [propertyAnchorEl, setPropertyAnchorEl] = useState(null);
   const [roomNoAnchorEl, setRoomNoAnchorEl] = useState(null);
