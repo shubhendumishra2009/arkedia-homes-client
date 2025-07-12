@@ -41,7 +41,7 @@ export default function GroceriesManagement() {
     if (!loading) {
       if (!user) {
         router.push('/signin');
-      } else if (user.role !== 'admin') {
+      } else if (user.role !== 'admin' && user.role !== 'employee') {
         router.push('/tenant/dashboard');
       } else {
         // Fetch groceries data

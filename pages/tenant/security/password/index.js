@@ -32,12 +32,12 @@ export default function ChangePassword() {
   });
 
   useEffect(() => {
-    // Check if user is authenticated and is an admin
+    // Check if user is authenticated and is a tenant
     if (!loading) {
       if (!user) {
         router.push('/signin');
-      } else if (user.role !== 'admin' && user.role !== 'employee') {
-        router.push('/tenant/dashboard');
+      } else if (user.role !== 'tenant') {
+        router.push('/admin/dashboard');
       }
     }
   }, [user, loading, router]);
@@ -178,7 +178,7 @@ export default function ChangePassword() {
   }
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>Change Password | Arkedia Homes</title>
       </Head>
@@ -241,7 +241,7 @@ export default function ChangePassword() {
                       value={formData.newPassword}
                       onChange={handleInputChange}
                       error={!!errors.newPassword}
-                      helperText={errors.newPassword || 'Password must be at least 8 characters with one uppercase letter and one number'}
+                      helperText={errors.newPassword || 'Password must be at least 8 characters'}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -320,6 +320,6 @@ export default function ChangePassword() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </Layout>
   );
 }

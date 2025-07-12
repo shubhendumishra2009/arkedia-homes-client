@@ -12,6 +12,29 @@ body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background: 
+    url('https://svgbackgrounds.com/wp-content/uploads/2023/06/abstract-shapes.svg') center center/cover no-repeat,
+    linear-gradient(135deg, rgba(40,60,90,0.25) 0%, rgba(255,255,255,0.7) 100%);
+  background-blend-mode: multiply, lighten;
+}
+
+
+#__next, main, .MuiContainer-root, .MuiBox-root, .MuiPaper-root, .MuiDrawer-root, .MuiAppBar-root {
+  position: relative;
+  z-index: 1;
 }
 
 a {

@@ -1,596 +1,723 @@
-import { useState, useEffect } from 'react';
-import { Box, Container, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Grid, CircularProgress, Snackbar, Alert } from '@mui/material';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
+import React, { useEffect, useState } from 'react';
+import Collapse from '@mui/material/Collapse';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import axios from 'axios';
+import {
+  Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Alert, Select, MenuItem, InputLabel, FormControl, Chip
+} from '@mui/material';
+import styles from '@/styles/Admin.module.css';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useAuth } from '@/contexts/AuthContext';
-import Layout from '@/components/Layout';
-import styles from '@/styles/Admin.module.css';
+import Tooltip from '@mui/material/Tooltip';
+import { Add, Edit, Delete } from '@mui/icons-material';
 
-export default function TenantsManagement() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const [tenants, setTenants] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMode, setDialogMode] = useState('add'); // 'add' or 'edit'
-  const [selectedTenant, setSelectedTenant] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    room_no: '',
-    rent_amount: 0,
-    security_deposit: 0,
-    lease_start: '',
-    lease_end: '',
-    payment_due_day: 5,
-    status: 'active',
-    notes: ''
-  });
+const initialTenantForm = {
+  name: '',
+  email: '',
+  phone: '',
+  payment_due_day: 1,
+  status: 'active',
+  notes: '',
+};
 
-  useEffect(() => {
-    // Check if user is authenticated and is an admin
-    if (!loading) {
-      if (!user) {
-        router.push('/signin');
-      } else if (user.role !== 'admin') {
-        router.push('/tenant/dashboard');
-      } else {
-        // Fetch tenants data
-        fetchTenants();
-      }
-    }
-  }, [user, loading, router]);
+const initialLeaseForm = {
+  room_id: '',
+  property_id: '',
+  lease_start_date: '',
+  lease_end_date: '',
+  rent_amount: '',
+  security_deposit: '',
+  payment_due_day: 1,
+  status: 'active',
+  notes: '',
+};
 
-  const fetchTenants = async () => {
-    setIsLoading(true);
+function TenantsManagement() {
+  // ...existing state
+  const [editLeaseDialog, setEditLeaseDialog] = useState(false);
+  const [editLeaseForm, setEditLeaseForm] = useState(initialLeaseForm);
+  const [editLeaseId, setEditLeaseId] = useState(null);
+  const [editLeaseTenant, setEditLeaseTenant] = useState(null);
+
+  // Handler to open edit lease dialog
+  const handleEditLease = (tenant, lease) => {
+    setEditLeaseForm({ ...lease, property_id: lease.property_id || lease.property?.id, room_id: lease.room_id || lease.room?.id });
+    setEditLeaseId(lease.id);
+    setEditLeaseTenant(tenant);
+    setEditLeaseDialog(true);
+  };
+
+  // Handler to close edit lease dialog
+  const handleCloseEditLeaseDialog = () => {
+    setEditLeaseDialog(false);
+    setEditLeaseForm(initialLeaseForm);
+    setEditLeaseId(null);
+    setEditLeaseTenant(null);
+  };
+
+  // Handler to submit edit lease
+  const handleEditLeaseSubmit = async () => {
     try {
-      // In a real application, this would be an API call
-      // For now, we'll use mock data
-      const mockTenants = [
+      await axios.put(`${API_URL}/tenant-leases/${editLeaseId}`,
         {
-          id: 1,
-          user: {
-            id: 101,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '555-123-4567'
-          },
-          room_no: '101',
-          rent_amount: 800,
-          security_deposit: 800,
-          lease_start: '2023-01-01',
-          lease_end: '2023-12-31',
-          payment_due_day: 5,
-          status: 'active',
-          notes: 'Long-term tenant'
-        },
-        {
-          id: 2,
-          user: {
-            id: 102,
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            phone: '555-987-6543'
-          },
-          room_no: '202',
-          rent_amount: 1800,
-          security_deposit: 1800,
-          lease_start: '2023-03-15',
-          lease_end: '2024-03-14',
-          payment_due_day: 10,
-          status: 'active',
-          notes: 'Premium suite tenant'
-        },
-        {
-          id: 3,
-          user: {
-            id: 103,
-            name: 'Mike Johnson',
-            email: 'mike.johnson@example.com',
-            phone: '555-456-7890'
-          },
-          room_no: '305',
-          rent_amount: 1200,
-          security_deposit: 1200,
-          lease_start: '2023-06-01',
-          lease_end: '2023-11-30',
-          payment_due_day: 5,
-          status: 'notice_given',
-          notes: 'Moving out at end of lease'
-        },
-        {
-          id: 4,
-          user: {
-            id: 104,
-            name: 'Sarah Williams',
-            email: 'sarah.williams@example.com',
-            phone: '555-789-0123'
-          },
-          room_no: '410',
-          rent_amount: 1500,
-          security_deposit: 1500,
-          lease_start: '2023-02-15',
-          lease_end: '2024-02-14',
-          payment_due_day: 1,
-          status: 'active',
-          notes: ''
+          lease_start_date: editLeaseForm.lease_start_date,
+          lease_end_date: editLeaseForm.lease_end_date,
+          rent_amount: editLeaseForm.rent_amount,
+          security_deposit: editLeaseForm.security_deposit,
+          payment_due_day: editLeaseForm.payment_due_day,
+          status: editLeaseForm.status,
+          notes: editLeaseForm.notes,
         }
-      ];
-      
-      setTenants(mockTenants);
-    } catch (error) {
-      console.error('Error fetching tenants:', error);
-      setSnackbar({
-        open: true,
-        message: 'Failed to fetch tenants',
-        severity: 'error'
-      });
-    } finally {
-      setIsLoading(false);
+      );
+      setSnackbar({ open: true, message: 'Lease updated', severity: 'success' });
+      fetchTenants();
+      handleCloseEditLeaseDialog();
+    } catch (err) {
+      setSnackbar({ open: true, message: err?.response?.data?.message || 'Failed to update lease', severity: 'error' });
     }
   };
 
-  const handleOpenDialog = (mode, tenant = null) => {
-    setDialogMode(mode);
-    if (mode === 'edit' && tenant) {
-      setSelectedTenant(tenant);
-      setFormData({
-        name: tenant.user.name,
-        email: tenant.user.email,
-        phone: tenant.user.phone,
-        room_no: tenant.room_no,
-        rent_amount: tenant.rent_amount,
-        security_deposit: tenant.security_deposit,
-        lease_start: tenant.lease_start,
-        lease_end: tenant.lease_end,
-        payment_due_day: tenant.payment_due_day,
-        status: tenant.status,
-        notes: tenant.notes
-      });
+  // Handler to delete lease
+  const handleDeleteLease = async (tenant, lease) => {
+    if (!window.confirm('Are you sure you want to delete this lease? This action cannot be undone.')) return;
+    try {
+      await axios.delete(`${API_URL}/tenant-leases/${lease.id}`);
+      setSnackbar({ open: true, message: 'Lease deleted', severity: 'success' });
+      fetchTenants();
+    } catch (err) {
+      setSnackbar({ open: true, message: err?.response?.data?.message || 'Failed to delete lease', severity: 'error' });
+    }
+  };
+
+  const [openTenantRowIdx, setOpenTenantRowIdx] = useState(null);
+  const handleToggleTenantRow = (idx) => {
+    setOpenTenantRowIdx(prevIdx => (prevIdx === idx ? null : idx));
+  };
+
+  const [tenants, setTenants] = useState([]);
+  const [tenantSearch, setTenantSearch] = useState('');
+  const [tenantStatusFilter, setTenantStatusFilter] = useState('all');
+  const [openTenantDialog, setOpenTenantDialog] = useState(false);
+  const [openLeaseDialog, setOpenLeaseDialog] = useState(false);
+  const [tenantForm, setTenantForm] = useState(initialTenantForm);
+  const [leaseForm, setLeaseForm] = useState(initialLeaseForm);
+  const [selectedTenant, setSelectedTenant] = useState(null);
+  const [leasesToAssign, setLeasesToAssign] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [properties, setProperties] = useState([]);
+  const [rooms, setRooms] = useState([]);
+
+  // Helper to get rent amount based on selected room and lease period
+  function calculateRentAmount(form, roomsList) {
+    const { room_id, lease_start_date, lease_end_date } = form;
+    if (!room_id || !lease_start_date || !lease_end_date) return '';
+    const room = roomsList.find(r => r.id === room_id);
+    if (!room) return '';
+    // Use pricing logic from backend: shortTerm, mediumTerm, longTerm
+    const start = new Date(lease_start_date);
+    const end = new Date(lease_end_date);
+    if (isNaN(start) || isNaN(end) || end <= start) return '';
+    const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    let price = '';
+    if (diffDays < 30) {
+      price = (room.short_term_price !== undefined && room.short_term_price !== null)
+        ? room.short_term_price
+        : (room.pricing?.shortTerm || (room.base_rent ? room.base_rent * 1.2 : ''));
+    } else if (diffMonths < 5) {
+      price = (room.medium_term_price !== undefined && room.medium_term_price !== null)
+        ? room.medium_term_price
+        : (room.pricing?.mediumTerm || (room.base_rent ? room.base_rent * 1.1 : ''));
     } else {
-      // Reset form for add mode
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        room_no: '',
-        rent_amount: 0,
-        security_deposit: 0,
-        lease_start: '',
-        lease_end: '',
-        payment_due_day: 5,
-        status: 'active',
-        notes: ''
-      });
+      price = (room.long_term_price !== undefined && room.long_term_price !== null)
+        ? room.long_term_price
+        : (room.pricing?.longTerm || room.base_rent);
     }
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedTenant(null);
-  };
-
-  const handleOpenDeleteDialog = (tenant) => {
-    setSelectedTenant(tenant);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-    setSelectedTenant(null);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      // In a real application, this would be an API call
-      if (dialogMode === 'add') {
-        // Add new tenant
-        const newTenant = {
-          id: tenants.length + 1,
-          user: {
-            id: 100 + tenants.length + 1,
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone
-          },
-          room_no: formData.room_no,
-          rent_amount: formData.rent_amount,
-          security_deposit: formData.security_deposit,
-          lease_start: formData.lease_start,
-          lease_end: formData.lease_end,
-          payment_due_day: formData.payment_due_day,
-          status: formData.status,
-          notes: formData.notes
-        };
-        setTenants([...tenants, newTenant]);
-        setSnackbar({
-          open: true,
-          message: 'Tenant added successfully',
-          severity: 'success'
-        });
-      } else {
-        // Edit existing tenant
-        const updatedTenants = tenants.map(tenant => 
-          tenant.id === selectedTenant.id ? {
-            ...tenant,
-            user: {
-              ...tenant.user,
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone
-            },
-            room_no: formData.room_no,
-            rent_amount: formData.rent_amount,
-            security_deposit: formData.security_deposit,
-            lease_start: formData.lease_start,
-            lease_end: formData.lease_end,
-            payment_due_day: formData.payment_due_day,
-            status: formData.status,
-            notes: formData.notes
-          } : tenant
-        );
-        setTenants(updatedTenants);
-        setSnackbar({
-          open: true,
-          message: 'Tenant updated successfully',
-          severity: 'success'
-        });
-      }
-      handleCloseDialog();
-    } catch (error) {
-      console.error('Error saving tenant:', error);
-      setSnackbar({
-        open: true,
-        message: 'Failed to save tenant',
-        severity: 'error'
-      });
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      // In a real application, this would be an API call
-      const updatedTenants = tenants.filter(tenant => tenant.id !== selectedTenant.id);
-      setTenants(updatedTenants);
-      setSnackbar({
-        open: true,
-        message: 'Tenant deleted successfully',
-        severity: 'success'
-      });
-      handleCloseDeleteDialog();
-    } catch (error) {
-      console.error('Error deleting tenant:', error);
-      setSnackbar({
-        open: true,
-        message: 'Failed to delete tenant',
-        severity: 'error'
-      });
-    }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({
-      ...snackbar,
-      open: false
-    });
-  };
-
-  const getStatusChipColor = (status) => {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'notice_given':
-        return 'warning';
-      case 'inactive':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  if (loading || isLoading) {
-    return (
-      <>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '80vh'
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      </>
-    );
+    return Number(price).toFixed(2);
   }
 
-  return (
-    <>
-      <Head>
-        <title>Tenants Management | Arkedia Homes</title>
-        <meta name="description" content="Manage tenants at Arkedia Homes" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+  function rentHelperText(form, roomsList) {
+    const { lease_start_date, lease_end_date } = form;
+    if (!lease_start_date || !lease_end_date) return 'Select lease dates to see rent.';
+    const start = new Date(lease_start_date);
+    const end = new Date(lease_end_date);
+    if (isNaN(start) || isNaN(end) || end <= start) return 'Invalid lease period.';
+    const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    if (diffDays < 30) return 'Short Term Pricing (below 1 month)';
+    if (diffMonths < 5) return 'Medium Term Pricing (1-5 months)';
+    return 'Long Term Pricing (5+ months)';
+  }
 
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography className={styles.pageTitle} variant="h4" component="h1" gutterBottom>
-            Tenants Management
-          </Typography>
+  // Fetch rooms for a specific property
+  const fetchRoomsByProperty = async (propertyId) => {
+    if (!propertyId) {
+      setRooms([]);
+      return;
+    }
+    try {
+      const { data } = await axios.get(`${API_URL}/rooms/property/${propertyId}`);
+      setRooms(data.data || []);
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to fetch rooms', severity: 'error' });
+      setRooms([]);
+    }
+  };
+  const [loading, setLoading] = useState(false);
+
+  // Fetch tenants
+  const fetchTenants = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(`${API_URL}/tenants`);
+      setTenants(data.data);
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to fetch tenants', severity: 'error' });
+    }
+    setLoading(false);
+  };
+
+  // Fetch properties and rooms
+  const fetchPropertiesAndRooms = async () => {
+    try {
+      const { data: propData } = await axios.get(`${API_URL}/properties`);
+      setProperties(propData.data || []);
+      // For demo: fetch all rooms
+      const { data: roomData } = await axios.get(`${API_URL}/rooms`);
+      setRooms(roomData.data || []);
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to fetch properties/rooms', severity: 'error' });
+    }
+  };
+
+  useEffect(() => {
+    fetchTenants();
+    fetchPropertiesAndRooms();
+  }, []);
+
+  // Tenant dialog handlers
+  const handleOpenTenantDialog = (tenant = null) => {
+    setSelectedTenant(tenant);
+    setTenantForm(tenant ? {
+      name: tenant.user?.name || '',
+      email: tenant.user?.email || '',
+      phone: tenant.user?.phone || '',
+      payment_due_day: tenant.payment_due_day,
+      status: tenant.status,
+      notes: tenant.notes || '',
+    } : initialTenantForm);
+    setOpenTenantDialog(true);
+  };
+  const handleCloseTenantDialog = () => {
+    setOpenTenantDialog(false);
+    setTenantForm(initialTenantForm);
+    setSelectedTenant(null);
+  };
+
+  // Lease dialog handlers
+  const handleOpenLeaseDialog = (tenant) => {
+    setSelectedTenant(tenant);
+    setLeaseForm(initialLeaseForm);
+    setLeasesToAssign([]);
+    setOpenLeaseDialog(true);
+  };
+  const handleCloseLeaseDialog = () => {
+    setOpenLeaseDialog(false);
+    setLeaseForm(initialLeaseForm);
+    setLeasesToAssign([]);
+    setSelectedTenant(null);
+  };
+
+  // Tenant form submit
+  const handleTenantSubmit = async () => {
+    try {
+      if (selectedTenant) {
+        // Update tenant
+        await axios.put(`${API_URL}/tenants/${selectedTenant.id}`, tenantForm);
+        setSnackbar({ open: true, message: 'Tenant updated', severity: 'success' });
+      } else {
+        // Create tenant
+        await axios.post(`${API_URL}/tenants`, tenantForm);
+        setSnackbar({ open: true, message: 'Tenant created', severity: 'success' });
+      }
+      fetchTenants();
+      handleCloseTenantDialog();
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to save tenant', severity: 'error' });
+    }
+  };
+
+  // Assign leases submit
+  const handleLeaseSubmit = async () => {
+    try {
+      await axios.post(`${API_URL}/tenants/assign-leases`, {
+        tenant_id: selectedTenant.id,
+        leases: leasesToAssign,
+      });
+      setSnackbar({ open: true, message: 'Leases assigned', severity: 'success' });
+      fetchTenants();
+      handleCloseLeaseDialog();
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to assign leases', severity: 'error' });
+    }
+  };
+
+  // Delete tenant
+  const handleDeleteTenant = async (tenantId) => {
+    if (!window.confirm('Are you sure you want to delete this tenant?')) return;
+    try {
+      await axios.delete(`${API_URL}/tenants/${tenantId}`);
+      setSnackbar({ open: true, message: 'Tenant deleted', severity: 'success' });
+      fetchTenants();
+    } catch (err) {
+      setSnackbar({ open: true, message: 'Failed to delete tenant', severity: 'error' });
+    }
+  };
+
+  // Lease form add
+  const handleAddLease = () => {
+    if (!leaseForm.lease_start_date || !leaseForm.lease_end_date) {
+      setSnackbar({ open: true, message: 'Lease start and end dates are required.', severity: 'warning' });
+      return;
+    }
+    if (!leaseForm.rent_amount || isNaN(Number(leaseForm.rent_amount))) {
+      setSnackbar({ open: true, message: 'Rent amount is required and must be a number.', severity: 'warning' });
+      return;
+    }
+    setLeasesToAssign([...leasesToAssign, leaseForm]);
+    setLeaseForm(initialLeaseForm);
+  };
+  const handleRemoveLease = (idx) => {
+    setLeasesToAssign(leasesToAssign.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <Box p={3}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" gutterBottom>Tenant Management</Typography>
+        <Tooltip title="Add Tenant" arrow>
           <Button
             className={styles.primaryButton}
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog('add')}
+            onClick={() => handleOpenTenantDialog()}
           >
             Add Tenant
           </Button>
-        </Box>
-
-          <Paper className={styles.card} sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table className={styles.table} stickyHeader aria-label="tenants table">
-                <TableHead className={styles.tableHeader}>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Phone</TableCell>
-                    <TableCell>Room</TableCell>
-                    <TableCell>Rent</TableCell>
-                    <TableCell>Lease Period</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                {tenants.map((tenant) => (
-                  <TableRow className={styles.tableRow} key={tenant.id}>
-                    <TableCell>{tenant.user.name}</TableCell>
-                    <TableCell>{tenant.user.email}</TableCell>
-                    <TableCell>{tenant.user.phone}</TableCell>
-                    <TableCell>{tenant.room_no}</TableCell>
-                    <TableCell>₹{tenant.rent_amount}/month</TableCell>
-                    <TableCell>
-                      {formatDate(tenant.lease_start)} - {formatDate(tenant.lease_end)}
-                    </TableCell>
-                    <TableCell>
-                      <span 
-                        className={`${styles.badge} ${tenant.status === 'active' ? styles.badgeSuccess : tenant.status === 'notice_given' ? styles.badgeWarning : styles.badgeDanger}`}
-                      >
-                        {tenant.status.replace('_', ' ')}
-                      </span>
-                    </TableCell>
-                    <TableCell align="right">
+        </Tooltip>
+      </Box>
+      {/* Tenant Search and Status Filter */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <TextField
+          label="Search tenants..."
+          variant="outlined"
+          value={tenantSearch}
+          onChange={e => setTenantSearch(e.target.value)}
+          size="small"
+          sx={{ width: 320 }}
+        />
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            label="Status"
+            value={tenantStatusFilter}
+            onChange={e => setTenantStatusFilter(e.target.value)}
+            MenuProps={{ PaperProps: { sx: { width: 150 } } }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="terminated">Terminated</MenuItem>
+            <MenuItem value="pending">Pending</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      <TableContainer component={Paper} sx={{ mt: 3 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Name</TableCell>
+              <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Email</TableCell>
+              <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Phone</TableCell>
+              <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tenants
+  .filter(tenant => {
+    // Status filter
+    if (tenantStatusFilter !== 'all' && tenant.status !== tenantStatusFilter) return false;
+    const q = tenantSearch.toLowerCase();
+    return (
+      tenant.user?.name?.toLowerCase().includes(q) ||
+      tenant.user?.email?.toLowerCase().includes(q) ||
+      tenant.user?.phone?.toLowerCase().includes(q)
+    );
+  })
+  .map((tenant, idx) => (
+    <React.Fragment key={tenant.id}>
+                <TableRow
+                  sx={{ backgroundColor: idx % 2 === 0 ? '#90caf9' : '#1976d2', color: idx % 2 === 0 ? 'inherit' : '#fff', '& td, & th': { color: idx % 2 === 0 ? 'inherit' : '#fff' } }}
+                >
+                  <TableCell>
+                    <IconButton
+                      aria-label={openTenantRowIdx === idx ? 'Collapse' : 'Expand'}
+                      size="small"
+                      onClick={() => handleToggleTenantRow(idx)}
+                      sx={{ mr: 1 }}
+                    >
+                      {openTenantRowIdx === idx ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                    {tenant.user?.name}
+                  </TableCell>
+                  <TableCell>{tenant.user?.email}</TableCell>
+                  <TableCell>{tenant.user?.phone}</TableCell>
+                  <TableCell>{tenant.status}</TableCell>
+                  <TableCell>
+                    <Tooltip title="Edit Tenant" arrow>
                       <IconButton
                         className={styles.secondaryButton}
-                        onClick={() => handleOpenDialog('edit', tenant)}
+                        onClick={() => handleOpenTenantDialog(tenant)}
                         size="small"
+                        sx={{ ml: 1 }}
                       >
                         <EditIcon fontSize="small" />
                       </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Tenant" arrow>
                       <IconButton
                         className={styles.accentButton}
-                        onClick={() => handleOpenDeleteDialog(tenant)}
+                        onClick={() => handleDeleteTenant(tenant.id)}
                         size="small"
                         sx={{ ml: 1 }}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          </Paper>
-        </Container>
-      
+                    </Tooltip>
+                    <Tooltip title="Assign Lease" arrow>
+                      <IconButton
+                        className={styles.primaryButton}
+                        onClick={() => handleOpenLeaseDialog(tenant)}
+                        size="small"
+                        sx={{ ml: 1 }}
+                      >
+                        <AddIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                    <Collapse in={openTenantRowIdx === idx} timeout="auto" unmountOnExit>
+                      <Box margin={2}>
+                        <Typography variant="subtitle1" gutterBottom>
+                          Assigned Rooms
+                        </Typography>
+                        {tenant.leases && tenant.leases.length > 0 ? (
+                          <Table size="small" sx={{ background: '#f8f8f8', borderRadius: 2 }}>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Room Number</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Property</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Lease Start</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Lease End</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Rent</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Status</TableCell>
+                                <TableCell sx={{ backgroundColor: '#bdbdbd', fontWeight: 'bold' }}>Actions</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {tenant.leases.map((lease) => (
+                                <TableRow key={lease.id}>
+                                  <TableCell>{lease.room?.room_no || lease.room_no || lease.room_id}</TableCell>
+                                  <TableCell>{lease.property?.name || lease.property_id}</TableCell>
+                                  <TableCell>{lease.lease_start_date?.slice(0,10)}</TableCell>
+                                  <TableCell>{lease.lease_end_date?.slice(0,10)}</TableCell>
+                                  <TableCell>{lease.rent_amount}</TableCell>
+                                  <TableCell>{lease.status}</TableCell>
+                                  <TableCell>
+                                    <Tooltip title="Edit Lease" arrow>
+                                      <IconButton
+                                        className={styles.secondaryButton}
+                                        onClick={() => handleEditLease(tenant, lease)}
+                                        size="small"
+                                        sx={{ ml: 1 }}
+                                        disabled={lease.status !== 'active' || (lease.lease_end_date && new Date(lease.lease_end_date) < new Date())}
+                                      >
+                                        <EditIcon fontSize="small" />
+                                      </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Lease" arrow>
+                                      <IconButton
+                                        className={styles.accentButton}
+                                        onClick={() => handleDeleteLease(tenant, lease)}
+                                        size="small"
+                                        sx={{ ml: 1 }}
+                                        disabled={lease.status !== 'active' || (lease.lease_end_date && new Date(lease.lease_end_date) < new Date())}
+                                      >
+                                        <DeleteIcon fontSize="small" />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">No assigned rooms.</Typography>
+                        )}
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Add/Edit Tenant Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>{dialogMode === 'add' ? 'Add New Tenant' : 'Edit Tenant'}</DialogTitle>
-        <DialogContent>
-          <Box component="form" sx={{ mt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="name"
-                  label="Full Name"
-                  fullWidth
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="email"
-                  label="Email Address"
-                  fullWidth
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="phone"
-                  label="Phone Number"
-                  fullWidth
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="room_no"
-                  label="Room Number"
-                  fullWidth
-                  value={formData.room_no}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="rent_amount"
-                  label="Rent Amount (₹)"
-                  type="number"
-                  fullWidth
-                  value={formData.rent_amount}
-                  onChange={handleInputChange}
-                  InputProps={{ inputProps: { min: 0 } }}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="security_deposit"
-                  label="Security Deposit (₹)"
-                  type="number"
-                  fullWidth
-                  value={formData.security_deposit}
-                  onChange={handleInputChange}
-                  InputProps={{ inputProps: { min: 0 } }}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="lease_start"
-                  label="Lease Start Date"
-                  type="date"
-                  fullWidth
-                  value={formData.lease_start}
-                  onChange={handleInputChange}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="lease_end"
-                  label="Lease End Date"
-                  type="date"
-                  fullWidth
-                  value={formData.lease_end}
-                  onChange={handleInputChange}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="payment_due_day"
-                  label="Payment Due Day"
-                  type="number"
-                  fullWidth
-                  value={formData.payment_due_day}
-                  onChange={handleInputChange}
-                  InputProps={{ inputProps: { min: 1, max: 31 } }}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    label="Status"
-                  >
-                    <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="notice_given">Notice Given</MenuItem>
-                    <MenuItem value="inactive">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="notes"
-                  label="Notes"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  value={formData.notes}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
+      {/* Tenant Dialog */}
+      <Dialog open={openTenantDialog} onClose={handleCloseTenantDialog}>
+        <DialogTitle>{selectedTenant ? 'Edit Tenant' : 'Add Tenant'}</DialogTitle>
+        <DialogContent sx={{ minWidth: { xs: 320, sm: 600 }, maxWidth: 700 }}>
+  <Box
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+      gap: 2,
+      p: 2
+    }}
+  >
+    <TextField label="Name" value={tenantForm.name} onChange={e => setTenantForm({ ...tenantForm, name: e.target.value })} fullWidth required />
+    <TextField label="Email" value={tenantForm.email} onChange={e => setTenantForm({ ...tenantForm, email: e.target.value })} fullWidth required />
+    <TextField label="Phone" value={tenantForm.phone} onChange={e => setTenantForm({ ...tenantForm, phone: e.target.value })} fullWidth />
+    <TextField label="Payment Due Day" type="number" value={tenantForm.payment_due_day} onChange={e => setTenantForm({ ...tenantForm, payment_due_day: e.target.value })} fullWidth />
+    <FormControl sx={{ width: '100%' }}>
+      <InputLabel>Status</InputLabel>
+      <Select value={tenantForm.status} label="Status" onChange={e => setTenantForm({ ...tenantForm, status: e.target.value })}>
+        <MenuItem value="active">Active</MenuItem>
+        <MenuItem value="inactive">Inactive</MenuItem>
+        <MenuItem value="pending">Pending</MenuItem>
+      </Select>
+    </FormControl>
+    <TextField label="Notes" value={tenantForm.notes} onChange={e => setTenantForm({ ...tenantForm, notes: e.target.value })} fullWidth multiline minRows={2} sx={{ gridColumn: '1 / span 2' }} />
+  </Box>
+</DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            {dialogMode === 'add' ? 'Add Tenant' : 'Save Changes'}
-          </Button>
+          <Button onClick={handleCloseTenantDialog}>Cancel</Button>
+          <Button onClick={handleTenantSubmit} variant="contained">{selectedTenant ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete tenant {selectedTenant?.user?.name}? This action cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-          <Button onClick={handleDelete} variant="contained" color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      {/* Lease Assignment Dialog */}
+      <Dialog open={openLeaseDialog} onClose={handleCloseLeaseDialog}>
+        <DialogTitle>Assign Lease(s) to Tenant</DialogTitle>
+<DialogContent sx={{ minWidth: { xs: 320, sm: 600 }, maxWidth: 700 }}>
+  <Box
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+      gap: 2,
+      p: 2
+    }}
+  >
+    <FormControl sx={{ width: '100%' }}>
+      <InputLabel>Property</InputLabel>
+      <Select
+        value={leaseForm.property_id}
+        label="Property"
+        onChange={e => {
+          setLeaseForm({ ...leaseForm, property_id: e.target.value, room_id: '' });
+          fetchRoomsByProperty(e.target.value);
+        }}
+        MenuProps={{ PaperProps: { sx: { width: 220 } } }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
+        {properties.map(prop => (
+          <MenuItem key={prop.id} value={prop.id}>{prop.name}</MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    <FormControl sx={{ width: '100%' }}>
+      <InputLabel>Room</InputLabel>
+      <Select value={leaseForm.room_id} label="Room" onChange={e => setLeaseForm({ ...leaseForm, room_id: e.target.value })} MenuProps={{ PaperProps: { sx: { width: 220 } } }}>
+        {rooms.filter(r =>
+  r.status === 'available' &&
+  r.property_id === leaseForm.property_id &&
+  !leasesToAssign.some(lease => lease.room_id === r.id)
+).map(room => (
+  <MenuItem key={room.id} value={room.id}>{room.room_no}</MenuItem>
+))}
+      </Select>
+    </FormControl>
+    <TextField
+      label="Lease Start Date"
+      type="date"
+      value={leaseForm.lease_start_date}
+      onChange={e => {
+        const newStart = e.target.value;
+        setLeaseForm(prev => {
+          const updated = { ...prev, lease_start_date: newStart };
+          return { ...updated, rent_amount: calculateRentAmount(updated, rooms) };
+        });
+      }}
+      InputLabelProps={{ shrink: true }}
+      fullWidth
+      required
+    />
+    <TextField
+      label="Lease End Date"
+      type="date"
+      value={leaseForm.lease_end_date}
+      onChange={e => {
+        const newEnd = e.target.value;
+        setLeaseForm(prev => {
+          const updated = { ...prev, lease_end_date: newEnd };
+          return { ...updated, rent_amount: calculateRentAmount(updated, rooms) };
+        });
+      }}
+      InputLabelProps={{ shrink: true }}
+      fullWidth
+      required
+    />
+    <TextField
+      label="Rent Amount"
+      type="number"
+      value={leaseForm.rent_amount}
+      InputProps={{ readOnly: true }}
+      fullWidth
+      required
+      helperText={rentHelperText(leaseForm, rooms)}
+    />
+    <TextField
+      label="Security Deposit"
+      type="number"
+      value={leaseForm.security_deposit}
+      onChange={e => setLeaseForm({ ...leaseForm, security_deposit: e.target.value })}
+      fullWidth
+    />
+    <TextField
+      label="Payment Due Day"
+      type="number"
+      value={leaseForm.payment_due_day}
+      onChange={e => setLeaseForm({ ...leaseForm, payment_due_day: e.target.value })}
+      fullWidth
+    />
+    <Button onClick={handleAddLease} variant="outlined" sx={{ mt: 1, gridColumn: '1 / span 2' }}>
+      Add Lease to List
+    </Button>
+    <Box sx={{ gridColumn: '1 / span 2' }}>
+      {leasesToAssign.map((lease, idx) => (
+        <Chip
+          key={idx}
+          label={`Room: ${rooms.find(r => r.id === lease.room_id)?.room_no || lease.room_id}, ${properties.find(p => p.id === lease.property_id)?.name || lease.property_id}, ${lease.lease_start_date} to ${lease.lease_end_date}`}
+          onDelete={() => handleRemoveLease(idx)}
+          sx={{ mr: 0.5, mb: 0.5 }}
+        />
+      ))}
+    </Box>
+  </Box>
+</DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseLeaseDialog}>Cancel</Button>
+          <Button onClick={handleLeaseSubmit} variant="contained" disabled={leasesToAssign.length === 0}>Assign Lease(s)</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit Lease Dialog */}
+      <Dialog
+  open={editLeaseDialog}
+  onClose={handleCloseEditLeaseDialog}
+  PaperProps={{
+    sx: {
+      minWidth: { xs: 320, sm: 600 },
+      maxWidth: 700,
+      minHeight: 400,
+      maxHeight: 700,
+      mt: 6
+    }
+  }}
+>
+        <DialogTitle sx={{ mb: 2 }}>Edit Lease</DialogTitle>
+<DialogContent sx={{ minWidth: { xs: 320, sm: 600 }, maxWidth: 700, mt: 2 }}>
+  <Box
+    sx={{
+      display: 'grid',
+      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+      gap: 2,
+      p: 2
+    }}
+  >
+    <TextField
+      label="Lease Start Date"
+      type="date"
+      value={editLeaseForm.lease_start_date}
+      onChange={e => setEditLeaseForm({ ...editLeaseForm, lease_start_date: e.target.value })}
+      InputLabelProps={{ shrink: true, style: { fontSize: 14, top: 0 } }}
+      inputProps={{ style: { minHeight: 40 } }}
+      fullWidth
+      required
+    />
+    <TextField
+      label="Lease End Date"
+      type="date"
+      value={editLeaseForm.lease_end_date}
+      onChange={e => setEditLeaseForm({ ...editLeaseForm, lease_end_date: e.target.value })}
+      InputLabelProps={{ shrink: true, style: { fontSize: 14, top: 0 } }}
+      inputProps={{ style: { minHeight: 40 } }}
+      fullWidth
+      required
+    />
+    <TextField
+      label="Rent Amount"
+      type="number"
+      value={editLeaseForm.rent_amount}
+      onChange={e => setEditLeaseForm({ ...editLeaseForm, rent_amount: e.target.value })}
+      fullWidth
+      required
+    />
+    <TextField
+      label="Security Deposit"
+      type="number"
+      value={editLeaseForm.security_deposit}
+      onChange={e => setEditLeaseForm({ ...editLeaseForm, security_deposit: e.target.value })}
+      fullWidth
+    />
+    <TextField
+      label="Payment Due Day"
+      type="number"
+      value={editLeaseForm.payment_due_day}
+      onChange={e => setEditLeaseForm({ ...editLeaseForm, payment_due_day: e.target.value })}
+      fullWidth
+    />
+    <FormControl sx={{ width: '100%' }}>
+      <InputLabel>Status</InputLabel>
+      <Select value={editLeaseForm.status} label="Status" onChange={e => setEditLeaseForm({ ...editLeaseForm, status: e.target.value })} MenuProps={{ PaperProps: { sx: { width: 220 } } }}>
+        <MenuItem value="active">Active</MenuItem>
+        <MenuItem value="terminated">Terminated</MenuItem>
+        <MenuItem value="pending">Pending</MenuItem>
+      </Select>
+    </FormControl>
+    <TextField label="Notes" value={editLeaseForm.notes} onChange={e => setEditLeaseForm({ ...editLeaseForm, notes: e.target.value })} fullWidth multiline minRows={2} sx={{ gridColumn: '1 / span 2' }} />
+  </Box>
+</DialogContent>
+        
+      <DialogActions>
+          <Button onClick={handleCloseEditLeaseDialog}>Cancel</Button>
+          <Button onClick={handleEditLeaseSubmit} variant="contained">Update Lease</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>{snackbar.message}</Alert>
       </Snackbar>
-    </>
+    </Box>
   );
 }
+
+export default TenantsManagement;

@@ -3,7 +3,20 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const AuthContext = createContext();
+// Create the context with default values to prevent undefined errors
+const AuthContext = createContext({
+  user: null,
+  loading: true,
+  register: () => Promise.resolve(),
+  login: () => Promise.resolve(),
+  logout: () => {},
+  isAuthenticated: () => false,
+  hasRole: () => false,
+  updateProfile: () => Promise.resolve(),
+  changePassword: () => Promise.resolve(),
+  forgotPassword: () => Promise.resolve(),
+  resetPassword: () => Promise.resolve()
+});
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -218,11 +231,49 @@ if (!API_URL) {
   const changePassword = async (passwordData) => {
     try {
       setLoading(true);
+      
+      // Validate password data
+      if (!passwordData.currentPassword) {
+        throw new Error('Current password is required');
+      }
+      
+      if (!passwordData.newPassword) {
+        throw new Error('New password is required');
+      }
+      
+      if (passwordData.newPassword.length < 8) {
+        throw new Error('New password must be at least 8 characters long');
+      }
+      
+      // Make API call to change password
       const response = await axios.post(`${API_URL}/auth/change-password`, passwordData);
+      
+      // Log success for debugging
+      console.log('Password change successful:', response.data);
+      
+      // Show success message
       toast.success('Password changed successfully!');
       return response.data;
     } catch (error) {
-      const message = error.response?.data?.message || 'Failed to change password';
+      console.error('Password change error:', error);
+      
+      // Handle different types of errors
+      let message;
+      
+      if (error.message) {
+        // Client-side validation errors
+        message = error.message;
+      } else if (error.response?.data?.message) {
+        // Server-side errors with message
+        message = error.response.data.message;
+      } else if (error.response?.status === 401) {
+        message = 'Current password is incorrect';
+      } else if (error.response?.status === 403) {
+        message = 'You are not authorized to change this password';
+      } else {
+        message = 'Failed to change password';
+      }
+      
       toast.error(message);
       throw error;
     } finally {

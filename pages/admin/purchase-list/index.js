@@ -45,11 +45,11 @@ const [newProcurement, setNewProcurement] = useState({
 });
 
   useEffect(() => {
-    // Check if user is authenticated and is an admin
+    // Check if user is authenticated and is an admin or employee
     if (!loading) {
       if (!user) {
         router.push('/signin');
-      } else if (user.role !== 'admin') {
+      } else if (user.role !== 'admin' && user.role !== 'employee') {
         router.push('/tenant/dashboard');
       } else {
         // Fetch purchases data

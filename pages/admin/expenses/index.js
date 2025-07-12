@@ -44,7 +44,7 @@ export default function ExpensesManagement() {
     if (!loading) {
       if (!user) {
         router.push('/signin');
-      } else if (user.role !== 'admin') {
+      } else if (user.role !== 'admin' && user.role !== 'employee') {
         router.push('/tenant/dashboard');
       } else {
         // Fetch expenses data
