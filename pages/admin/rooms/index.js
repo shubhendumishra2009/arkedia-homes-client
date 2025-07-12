@@ -21,6 +21,7 @@ export default function RoomsManagement() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [rooms, setRooms] = useState([]);
+const [roomNoError, setRoomNoError] = useState('');
   const [filter, setFilter] = useState({ property_id: '', room_no: '', status: '' });
   // Track if price fields have been manually edited
   const [pricingEdited, setPricingEdited] = useState({});
@@ -296,6 +297,7 @@ export default function RoomsManagement() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedRoom(null);
+    setRoomNoError('');
   };
 
   const handleOpenDeleteDialog = (room) => {
@@ -325,6 +327,22 @@ export default function RoomsManagement() {
 
   const handleInputChange = (e, section) => {
   const { name, value, checked } = e.target;
+  // Duplicate room_no validation for both property_id and room_no
+  if (name === 'room_no' || name === 'property_id') {
+    const newRoomNo = name === 'room_no' ? value : formData.room_no;
+    const newPropertyId = name === 'property_id' ? value : formData.property_id;
+    if (newRoomNo && newPropertyId) {
+      const duplicate = rooms.find(
+        r => r.room_no === newRoomNo &&
+             r.property_id == newPropertyId &&
+             (dialogMode === 'add' || r.id !== (selectedRoom?.id))
+      );
+      setRoomNoError(duplicate ? 'Room number already exists for this property' : '');
+    } else {
+      setRoomNoError('');
+    }
+  }
+
   if (section === 'pricing') {
     setPricingEdited(prev => ({ ...prev, [name]: true }));
     setFormData(prev => ({
@@ -339,6 +357,21 @@ export default function RoomsManagement() {
     
     // If property is being selected, enable the form fields
     if (name === 'property_id') {
+      if (!value) setRoomNoError('');
+    // Also check for duplicate room_no when property changes
+    const newRoomNo = formData.room_no;
+    const newPropertyId = value;
+    if (newRoomNo && newPropertyId) {
+      const duplicate = rooms.find(
+        r => r.room_no === newRoomNo &&
+             r.property_id == newPropertyId &&
+             (dialogMode === 'add' || r.id !== (selectedRoom?.id))
+      );
+      setRoomNoError(duplicate ? 'Room number already exists for this property' : '');
+    } else {
+      setRoomNoError('');
+    }
+
       setPropertySelected(value !== '');
       setFormData(prev => ({ ...prev, property_id: value }));
       // Fetch meal tariff for selected property
@@ -782,6 +815,8 @@ export default function RoomsManagement() {
                   onChange={handleInputChange}
                   required
                   disabled={!propertySelected}
+                  error={!!roomNoError}
+                  helperText={roomNoError}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -1167,7 +1202,7 @@ export default function RoomsManagement() {
             onClick={handleSubmit} 
             variant="contained" 
             color="primary"
-            disabled={!propertySelected}
+            disabled={!propertySelected || !!roomNoError}
           >
             {dialogMode === 'add' ? 'Add Room' : 'Save Changes'}
           </Button>
