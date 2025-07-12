@@ -25,7 +25,7 @@ export default function RoomFilters({
                 sx: { width: propertyAnchorEl ? propertyAnchorEl.clientWidth : undefined }
               }
             }}
-            value={filter.property_id}
+            value={filter?.property_id || ''}
             label="Property"
             onChange={e => setFilter(f => ({ ...f, property_id: e.target.value, room_no: '', status: '' }))}
             onOpen={e => setPropertyAnchorEl(e.currentTarget)}
@@ -48,10 +48,10 @@ export default function RoomFilters({
                 sx: { width: roomNoAnchorEl ? roomNoAnchorEl.clientWidth : undefined }
               }
             }}
-            value={filter.room_no}
+            value={filter?.room_no || ''}
             label="Room Number"
             onChange={e => setFilter(f => ({ ...f, room_no: e.target.value }))}
-            disabled={!filter.property_id}
+            disabled={!filter?.property_id}
             onOpen={e => setRoomNoAnchorEl(e.currentTarget)}
             onClose={() => setRoomNoAnchorEl(null)}
           >
@@ -72,10 +72,10 @@ export default function RoomFilters({
                 sx: { width: statusAnchorEl ? statusAnchorEl.clientWidth : undefined }
               }
             }}
-            value={filter.status}
+            value={filter?.status || ''}
             label="Status"
             onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
-            disabled={!filter.property_id}
+            disabled={!filter?.property_id}
             onOpen={e => setStatusAnchorEl(e.currentTarget)}
             onClose={() => setStatusAnchorEl(null)}
           >
