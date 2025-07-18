@@ -110,6 +110,8 @@ const [roomNoError, setRoomNoError] = useState('');
     has_private_bathroom: false,
     description: '',
     status: 'available',
+    booking_amount: '',
+    security_deposit: '',
     pricing: {
       medium_term_price: '',
       long_term_price: '',
@@ -208,6 +210,8 @@ const [roomNoError, setRoomNoError] = useState('');
           has_private_bathroom: room.has_private_bathroom || false,
           description: room.description,
           status: room.status,
+          booking_amount: room.booking_amount ?? '',
+          security_deposit: room.security_deposit ?? '',
           pricing: {
             short_term_price: room.short_term_price ?? '',
             medium_term_price: room.medium_term_price ?? '',
@@ -259,6 +263,8 @@ const [roomNoError, setRoomNoError] = useState('');
       setSelectedRoom(room);
       setFormData({
         ...room,
+        booking_amount: room.booking_amount || '',
+        security_deposit: room.security_deposit || '',
         pricing: room.pricing || {}
       });
       setPricingEdited({ shortTerm: false, mediumTerm: false, longTerm: false });
@@ -266,8 +272,10 @@ const [roomNoError, setRoomNoError] = useState('');
         setPropertySelected(true);
       }
     } else {
-      // Reset form for add mode
+      setMealTariff(null);
+      setSelectedRoom(null);
       setFormData({
+        property_id: '',
         room_no: '',
         room_type: 'single',
         room_category: 'classic',
@@ -280,13 +288,25 @@ const [roomNoError, setRoomNoError] = useState('');
         has_tv: false,
         has_internet: false,
         has_private_bathroom: false,
+        booking_amount: '',
+        security_deposit: '',
         description: '',
         status: 'available',
         pricing: {
-          shortTerm: '',
-          mediumTerm: '',
-          longTerm: '',
-          withFooding: ''
+          medium_term_price: '',
+          long_term_price: '',
+          medium_term_price_with_fooding: '',
+          long_term_price_with_fooding: '',
+          breakfast_only_medium_term: '',
+          breakfast_only_long_term: '',
+          lunch_only_medium_term: '',
+          lunch_only_long_term: '',
+          dinner_only_medium_term: '',
+          dinner_only_long_term: '',
+          bf_and_dinner_medium_term: '',
+          bf_and_dinner_long_term: '',
+          lunch_and_dinner_medium_term: '',
+          lunch_and_dinner_long_term: ''
         }
       });
       setPricingEdited({ shortTerm: false, mediumTerm: false, longTerm: false });
@@ -884,9 +904,34 @@ const [roomNoError, setRoomNoError] = useState('');
                   onChange={handleInputChange}
                   InputProps={{ inputProps: { min: 0 } }}
                   disabled={!propertySelected}
+                  required={dialogMode === 'add'}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
+                <TextField
+                  name="booking_amount"
+                  label="Booking Amount (₹)"
+                  type="number"
+                  fullWidth
+                  value={formData.booking_amount}
+                  onChange={handleInputChange}
+                  disabled={!propertySelected}
+                  required={dialogMode === 'add'}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="security_deposit"
+                  label="Security Deposit (₹)"
+                  type="number"
+                  fullWidth
+                  value={formData.security_deposit}
+                  onChange={handleInputChange}
+                  disabled={!propertySelected}
+                  required={dialogMode === 'add'}
+                />
+              </Grid>
+              <Grid item xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -1098,6 +1143,7 @@ const [roomNoError, setRoomNoError] = useState('');
     disabled={!propertySelected}
   />
 </Grid>
+
                 </Grid>
               </Grid>
               <Grid item xs={12}>
@@ -1312,3 +1358,4 @@ const [roomNoError, setRoomNoError] = useState('');
     </>
   );
 }
+

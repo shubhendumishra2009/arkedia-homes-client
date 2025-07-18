@@ -3,7 +3,12 @@ import Head from 'next/head';
 import Link from 'next/link';
 import styles from '@/styles/Home.module.css';
 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 export default function Home() {
+
+
   return (
     <>
       <Head>
@@ -37,9 +42,9 @@ export default function Home() {
                 color="primary" 
                 size="large"
                 component={Link}
-                href="/gallery"
+                href="/properties"
               >
-                View Rooms
+                Take a Tour
               </Button>
               <Button 
                 variant="outlined" 
@@ -101,90 +106,87 @@ export default function Home() {
         </Grid>
       </Container>
 
-      {/* Room Types Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: 8 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h3" component="h2" align="center" gutterBottom>
-            Our Room Types
-          </Typography>
-          <Grid container spacing={4} mt={2}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardMedia
-                  component="div"
-                  sx={{ height: 200, bgcolor: 'grey.300' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="h3">
-                    Single Room
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Perfect for individuals seeking comfort and privacy.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardMedia
-                  component="div"
-                  sx={{ height: 200, bgcolor: 'grey.300' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="h3">
-                    Double Room
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Spacious accommodation for couples or friends.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardMedia
-                  component="div"
-                  sx={{ height: 200, bgcolor: 'grey.300' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="h3">
-                    Deluxe Room
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Premium features with enhanced comfort and style.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card>
-                <CardMedia
-                  component="div"
-                  sx={{ height: 200, bgcolor: 'grey.300' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="h3">
-                    Suite
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Luxury accommodation with separate living area.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Typography variant="h3" component="h2" align="center" gutterBottom>
+          Our Rooms
+        </Typography>
+        <Grid container spacing={4} mt={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardMedia
+                component="div"
+                sx={{ height: 200, bgcolor: 'grey.300' }}
+              />
+              <CardContent>
+                <Typography variant="h6" component="h3">
+                  Single Room
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Cozy accommodation for individuals.
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-          <Box mt={4} textAlign="center">
-            <Button 
-              variant="contained" 
-              color="primary"
-              component={Link}
-              href="/pricing"
-            >
-              View Pricing
-            </Button>
-          </Box>
-        </Container>
-      </Box>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardMedia
+                component="div"
+                sx={{ height: 200, bgcolor: 'grey.300' }}
+              />
+              <CardContent>
+                <Typography variant="h6" component="h3">
+                  Double Room
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Spacious accommodation for couples or friends.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardMedia
+                component="div"
+                sx={{ height: 200, bgcolor: 'grey.300' }}
+              />
+              <CardContent>
+                <Typography variant="h6" component="h3">
+                  Deluxe Room
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Premium features with enhanced comfort and style.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardMedia
+                component="div"
+                sx={{ height: 200, bgcolor: 'grey.300' }}
+              />
+              <CardContent>
+                <Typography variant="h6" component="h3">
+                  Suite
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Luxury accommodation with separate living area.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Box mt={4} textAlign="center">
+          <Button 
+            variant="contained" 
+            color="primary"
+            component={Link}
+            href="/pricing"
+          >
+            View Pricing
+          </Button>
+        </Box>
+      </Container>
 
       {/* Testimonials Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
