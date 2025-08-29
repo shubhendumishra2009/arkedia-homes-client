@@ -1,10 +1,26 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/globals.css';
 import Layout from '@/components/Layout';
 import { AuthProvider } from '@/contexts/AuthContext';
+
+// Add global CSS reset
+const globalStyles = `
+  html, body, #__next {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+`;
 
 // Create a theme instance
 const theme = createTheme({

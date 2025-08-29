@@ -371,9 +371,29 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="sticky" color="default" elevation={1} sx={{ bgcolor: 'white' }}>
-        <Container maxWidth="lg">
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <AppBar 
+        position="fixed" 
+        elevation={0} 
+        sx={{ 
+          bgcolor: '#FFFFFF', 
+          color: 'text.primary', 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1100
+        }}
+      >
+        <Container maxWidth="lg" sx={{ padding: '0 !important' }}>
+          <Toolbar 
+            disableGutters
+            sx={{ 
+              minHeight: '64px !important',
+              justifyContent: 'space-between',
+              px: 2
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box
                 component="img"
@@ -507,16 +527,16 @@ const Layout = ({ children }) => {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
-            width: { sm: `calc(100% - ${user && (user.role === 'admin' || user.role === 'employee' || user.role === 'tenant') && !isMobile ? (sidebarCollapsed ? theme.spacing(9) : 240) : 0}px)` },
-            transition: theme.transitions.create('width', {
+            p: 0,
+            width: { 
+              sm: `calc(100% - ${user && (user.role === 'admin' || user.role === 'employee' || user.role === 'tenant') && !isMobile ? (sidebarCollapsed ? theme.spacing(9) : 240) : 0}px)` 
+            },
+            transition: theme.transitions.create(['width', 'margin'], {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,
             }),
           }}
         >
-          {/* Add top margin to prevent content from hiding behind AppBar */} 
-          {/* <Toolbar />  Removed this Toolbar as AppBar is sticky */} 
           {children}
         </Box>
       </Box>

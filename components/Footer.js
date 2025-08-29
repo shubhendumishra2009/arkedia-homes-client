@@ -33,13 +33,13 @@ const Footer = () => {
         { name: 'Sign In', href: '/signin' },
         { name: 'Sign Up', href: '/signup' },
         { name: 'Tenant Portal', href: '/tenant/dashboard' },
-        { name: 'Maintenance Requests', href: '/tenant/maintenance' },
+      
       ],
     },
   ];
 
   return (
-    <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6, borderTop: 1, borderColor: 'divider' }}>
+    <Box component="footer" sx={{ bgcolor: '#FFFFFF', py: 6, mt: 'auto', borderTop: 1, borderColor: 'divider' }}>
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           {footerLinks.map((section) => (
@@ -75,7 +75,14 @@ const Footer = () => {
               Connect With Us
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton aria-label="Facebook" color="primary">
+              <IconButton 
+                aria-label="Facebook" 
+                color="primary"
+                component="a"
+                href="https://www.facebook.com/share/1KnNBRv4Xu/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FacebookIcon />
               </IconButton>
               <IconButton aria-label="Twitter" color="primary">
@@ -89,10 +96,11 @@ const Footer = () => {
               </IconButton>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              123 Rental Street, Suite 456<br />
-              Cityville, State 78901<br />
-              info@arkediahomes.com<br />
-              (123) 456-7890
+              ARKEDIA HOMES, NANDA LANE,<br />
+              IN FRONT OF SRIKRISHNA MANDAP,<br />
+              KULUTHKANI, DHANUPALI, SAMBALPUR<br />
+              info@arkediahomes.com<br/>
+              PHONE:9692606186
             </Typography>
           </Grid>
         </Grid>

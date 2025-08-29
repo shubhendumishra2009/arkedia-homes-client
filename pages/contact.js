@@ -120,36 +120,36 @@ export default function Contact() {
       icon: <LocationOnIcon fontSize="large" color="primary" />,
       title: 'Our Location',
       details: [
-        '123 Arkedia Street',
-        'Cityville, State 12345',
-        'United States'
+        'ARKEDIA HOMES,NANDA LANE',
+        'IN FRONT OF SRIKRISHNA MANDAP',
+        'KULUTHKANI,DHANUPALI,SAMBALPUR, 768001'
       ]
     },
     {
       icon: <PhoneIcon fontSize="large" color="primary" />,
       title: 'Phone Numbers',
       details: [
-        'Main Office: (555) 123-4567',
-        'Maintenance: (555) 987-6543',
-        'After Hours: (555) 789-0123'
+        'Main Office: 9692606186',
+        'Booking: 8026129835',
+        'Maintenance: 7008593611'
+        
       ]
     },
     {
       icon: <EmailIcon fontSize="large" color="primary" />,
       title: 'Email Addresses',
       details: [
-        'General Inquiries: info@arkediahomes.com',
-        'Leasing: leasing@arkediahomes.com',
-        'Support: support@arkediahomes.com'
+        'General Inquiries: arkediainfo@gmail.com',
+        'Leasing: arkedia.homes@gmail.com'
+        
       ]
     },
     {
       icon: <AccessTimeIcon fontSize="large" color="primary" />,
       title: 'Office Hours',
       details: [
-        'Monday - Friday: 9:00 AM - 6:00 PM',
-        'Saturday: 10:00 AM - 4:00 PM',
-        'Sunday: Closed'
+        'Monday - Friday: 10:00 AM - 6:00 PM',
+        'Saturday & Sunday: Closed'
       ]
     }
   ];
@@ -310,11 +310,30 @@ export default function Contact() {
                 We'd love to meet you in person. Stop by our main office during business hours.
               </Typography>
               
-              <Paper sx={{ height: '400px', width: '100%', bgcolor: 'grey.200', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4 }}>
-                <Typography variant="body1" color="text.secondary">
-                  Map will be displayed here
-                </Typography>
-              </Paper>
+              <Box sx={{ mt: 4, mb: 4, height: '450px', width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3739.981622783199!2d83.9904329!3d21.4543447!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a201f75c54b4a4f%3A0x4a2a3f7e2c1d3d4e!2sArkedia%20Homes!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Arkedia Homes Location"
+                ></iframe>
+              </Box>
+              <Box textAlign="center" mt={2}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  href="https://www.google.com/maps/dir//21.4545544,83.9930293/@21.454554,83.993029,17z?entry=ttu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  startIcon={<LocationOnIcon />}
+                >
+                  Get Directions
+                </Button>
+              </Box>
               
               <Typography variant="body2" color="text.secondary">
                 * Please note that appointments are recommended for property viewings.
