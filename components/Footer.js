@@ -24,7 +24,7 @@ const Footer = () => {
         { name: 'FAQ', href: '/faq' },
         { name: 'Blog', href: '/blog' },
         { name: 'Terms of Service', href: '/terms' },
-        { name: 'Privacy Policy', href: '/privacy' },
+        { name: 'Privacy Policy', href: '/privacy-policy' },
       ],
     },
     {
