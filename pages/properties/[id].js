@@ -11,6 +11,7 @@ export default function PropertyRooms() {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [roomCategories, setRoomCategories] = useState([]);
 
   useEffect(() => {
     if (!id) return;
@@ -19,7 +20,48 @@ export default function PropertyRooms() {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/properties/${id}`)
       .then(res => {
         setProperty(res.data.data || null);
-        setRooms(res.data.data?.rooms || []);
+        const fetchedRooms = res.data.data?.rooms || [];
+        setRooms(fetchedRooms);
+        
+        // Group rooms by room_category and room_type to create categories
+        const categories = {};
+        fetchedRooms.forEach(room => {
+          const category = room.room_category || 'Classic';
+          const type = room.room_type || 'Single';
+          const key = `${category}-${type}`;
+          
+          if (!categories[key]) {
+            categories[key] = {
+              category,
+              type,
+              rooms: [],
+              image: room.image_urls?.[0] || `https://picsum.photos/seed/${key}/400/180`,
+              hasAvailable: false,
+              lowestPrice: Infinity
+            };
+          }
+          
+          categories[key].rooms.push(room);
+          
+          // Check availability
+          if (room.status === 'available') {
+            categories[key].hasAvailable = true;
+            
+            // Track lowest price
+            if (room.base_rent && room.base_rent < categories[key].lowestPrice) {
+              categories[key].lowestPrice = room.base_rent;
+            }
+          }
+        });
+        
+        // Convert to array and sort by category and type
+        const categoriesArray = Object.values(categories);
+        categoriesArray.sort((a, b) => {
+          if (a.category !== b.category) return a.category.localeCompare(b.category);
+          return a.type.localeCompare(b.type);
+        });
+        
+        setRoomCategories(categoriesArray);
       })
       .catch(() => setError('Failed to load property or rooms.'))
       .finally(() => setLoading(false));
@@ -37,68 +79,72 @@ export default function PropertyRooms() {
       ) : (
         <>
           <Typography variant="h4" gutterBottom align="center">
-            {property?.name || 'Property'} - Rooms
+            {property?.name || 'Property'} - Room Categories
           </Typography>
+          
+          {/* Room Categories Display */}
           <Grid container spacing={4} mt={2}>
-            {rooms.length === 0 ? (
+            {roomCategories.length === 0 ? (
               <Grid item xs={12}>
-                <Typography align="center">No rooms available for this property.</Typography>
+                <Typography align="center">No room categories available for this property.</Typography>
               </Grid>
-            ) : rooms.map((room, idx) => (
-              <Grid item xs={12} sm={6} md={4} key={room.id}>
+            ) : roomCategories.map((category, idx) => (
+              <Grid item xs={12} sm={6} md={4} key={category.type}>
                 <Card>
                   <CardMedia
                     component="img"
-                    height="180"
-                    image={room.image_url || `https://picsum.photos/seed/room${room.id}/400/180`}
-                    alt={room.room_no || 'Room'}
+                    height="200"
+                    image={category.image}
+                    alt={category.type}
                   />
 
                   <CardContent>
                     <Typography variant="h6" component="h3" gutterBottom>
-                      Room {room.room_no}
+                      {category.category} - {category.type} Rooms
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {room.room_type || 'Room Type'} | {room.status || 'Status'}
+                      {category.rooms.length} room(s) in this category
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {room.description || 'No description'}
+                      {category.hasAvailable ? 'Rooms available for booking' : 'No rooms available for booking'}
                     </Typography>
-                    <Box mt={2} display="flex" gap={1}>
-                      <NextLink href={{ pathname: `/rooms/${room.id}`, query: { back: `/properties/${id}` } }} passHref legacyBehavior>
+                    {category.hasAvailable && category.lowestPrice !== Infinity && (
+                      <Typography variant="body1" color="primary" fontWeight="bold" gutterBottom>
+                        Starting from ₹{category.lowestPrice}/month
+                      </Typography>
+                    )}
+                    
+                    <Box mt={2} display="flex" justifyContent="space-between">
+                      <Button
+                        variant="outlined"
+                        component={NextLink}
+                        href={`/rooms?propertyId=${id}&category=${encodeURIComponent(category.category)}&type=${encodeURIComponent(category.type)}`}
+                      >
+                        View Details
+                      </Button>
+                      
+                      {category.hasAvailable ? (
                         <Button
-                          variant="outlined"
-                          size="small"
+                          variant="contained"
+                          color="primary"
+                          component={NextLink}
+                          href={`/book-room?propertyId=${id}&category=${encodeURIComponent(category.category)}&type=${encodeURIComponent(category.type)}`}
                         >
-                          View Details
+                          Book Now
                         </Button>
-                      </NextLink>
-                      {room.status !== 'available' ? (
-                        <Tooltip title={`Booking not available: Room is ${room.status || 'unavailable'}`} placement="top">
+                      ) : (
+                        <Tooltip title="No rooms available in this category" placement="top">
                           <span>
-                            <NextLink href={{ pathname: '/book-room', query: { roomId: room.id } }} passHref legacyBehavior>
-                              <Button
-                                variant="contained"
-                                size="small"
-                                color="primary"
-                                disabled
-                                sx={{ opacity: 0.5, pointerEvents: 'none' }}
-                              >
-                                Book Now
-                              </Button>
-                            </NextLink>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              disabled
+                              sx={{ opacity: 0.5, pointerEvents: 'none' }}
+                            >
+                              Book Now
+                            </Button>
                           </span>
                         </Tooltip>
-                      ) : (
-                        <NextLink href={{ pathname: '/book-room', query: { roomId: room.id } }} passHref legacyBehavior>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color="primary"
-                          >
-                            Book Now
-                          </Button>
-                        </NextLink>
                       )}
                     </Box>
                   </CardContent>

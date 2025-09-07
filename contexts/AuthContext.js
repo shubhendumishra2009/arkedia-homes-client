@@ -287,6 +287,22 @@ if (!API_URL) {
       setLoading(true);
       const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
       toast.success('Password reset instructions sent to your email!');
+      
+      // For development/testing: If debug info is available, show the reset link
+      if (response.data?.debug?.resetLink) {
+        console.log('Debug - Reset Link:', response.data.debug.resetLink);
+        toast.info('For testing: Check console for reset link');
+        
+        // For easier testing, redirect directly to reset page
+        if (process.env.NODE_ENV !== 'production') {
+          const resetUrl = new URL(response.data.debug.resetLink);
+          const token = resetUrl.searchParams.get('token');
+          if (token) {
+            window.location.href = `/reset-password?token=${encodeURIComponent(token)}`;
+          }
+        }
+      }
+      
       return response.data;
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to process request';

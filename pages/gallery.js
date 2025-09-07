@@ -10,7 +10,7 @@ const roomTypes = [
     id: 1,
     type: 'Single Room',
     description: 'Cozy and comfortable single rooms perfect for individuals. Features include a comfortable bed, study desk, wardrobe, and essential amenities.',
-    price: 'From $800/month',
+    price: 'From ₹800/month',
     images: [
       { src: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304', alt: 'Single Room 1' },
       { src: 'https://images.unsplash.com/photo-1540518614846-7eded433c457', alt: 'Single Room 2' },
@@ -22,7 +22,7 @@ const roomTypes = [
     id: 2,
     type: 'Double Room',
     description: 'Spacious double rooms ideal for those who prefer more space. Includes a larger bed, expanded storage, and additional seating area.',
-    price: 'From $1,200/month',
+    price: 'From ₹1,200/month',
     images: [
       { src: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85', alt: 'Double Room 1' },
       { src: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf', alt: 'Double Room 2' },
@@ -34,7 +34,7 @@ const roomTypes = [
     id: 3,
     type: 'Deluxe Room',
     description: 'Premium deluxe rooms with enhanced amenities and comfort. Features include a larger living space, premium furnishings, and additional amenities.',
-    price: 'From $1,500/month',
+    price: 'From ₹1,500/month',
     images: [
       { src: 'https://images.unsplash.com/photo-1590490360182-c33d57733427', alt: 'Deluxe Room 1' },
       { src: 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc', alt: 'Deluxe Room 2' },
@@ -46,7 +46,7 @@ const roomTypes = [
     id: 4,
     type: 'Suite',
     description: 'Luxurious suites offering the ultimate comfort and space. Includes a separate living area, premium amenities, and panoramic views.',
-    price: 'From $1,800/month',
+    price: 'From ₹1,800/month',
     images: [
       { src: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461', alt: 'Suite 1' },
       { src: 'https://images.unsplash.com/photo-1591088398332-8a7791972843', alt: 'Suite 2' },

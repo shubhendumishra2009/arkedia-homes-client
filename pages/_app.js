@@ -283,38 +283,9 @@ const theme = createTheme({
           fontWeight: 600,
           backgroundColor: '#F8F9FA',
         },
-  },
-  MuiPaper: {
-    styleOverrides: {
-      root: {
-        borderRadius: 12,
-      },
-      elevation1: {
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
-      },
-      elevation2: {
-        boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.08)',
       },
     },
-  },
-  MuiDivider: {
-    styleOverrides: {
-      root: {
-        borderColor: 'rgba(0, 0, 0, 0.08)',
-      },
-    },
-  },
-  MuiTableCell: {
-    styleOverrides: {
-      root: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
-      },
-      head: {
-        fontWeight: 600,
-        backgroundColor: '#F8F9FA',
-      },
-    },
-  },
+},
 });
 
 function MyApp({ Component, pageProps }) {

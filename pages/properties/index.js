@@ -58,7 +58,7 @@ export default function PropertiesList() {
                     href={`/properties/${property.id}`}
                     sx={{ mt: 2 }}
                   >
-                    Show Rooms
+                    View Details
                   </Button>
                 </CardContent>
               </Card>

@@ -47,7 +47,7 @@ const RoomDetails = ({ room }) => (
           <Typography variant="subtitle2" color="textSecondary">
             Rent Amount
           </Typography>
-          <Typography variant="body1">${room.base_rent}/month</Typography>
+          <Typography variant="body1">₹{room.base_rent}/month</Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="subtitle2" color="textSecondary">
@@ -97,7 +97,7 @@ const PaymentStatus = ({ payment }) => (
           <Typography variant="subtitle2" color="textSecondary">
             Amount
           </Typography>
-          <Typography variant="body1">${payment.amount}</Typography>
+          <Typography variant="body1">₹{payment.amount}</Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="subtitle2" color="textSecondary">
