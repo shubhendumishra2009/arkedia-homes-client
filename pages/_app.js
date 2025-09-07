@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
@@ -6,6 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/globals.css';
 import Layout from '@/components/Layout';
 import { AuthProvider } from '@/contexts/AuthContext';
+
+// Google Tag Manager ID
+const GTM_ID = 'GTM-NRJRBCB9';
 
 // Add global CSS reset
 const globalStyles = `
@@ -278,12 +283,76 @@ const theme = createTheme({
           fontWeight: 600,
           backgroundColor: '#F8F9FA',
         },
+  },
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        borderRadius: 12,
+      },
+      elevation1: {
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
+      },
+      elevation2: {
+        boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.08)',
+      },
+    },
+  },
+  MuiDivider: {
+    styleOverrides: {
+      root: {
+        borderColor: 'rgba(0, 0, 0, 0.08)',
+      },
+    },
+  },
+  MuiTableCell: {
+    styleOverrides: {
+      root: {
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+      },
+      head: {
+        fontWeight: 600,
+        backgroundColor: '#F8F9FA',
       },
     },
   },
 });
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Initialize GTM
+    if (typeof window !== 'undefined') {
+      // Initialize dataLayer if it doesn't exist
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+      });
+
+      // Track page views on route change
+      const handleRouteChange = (url) => {
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: 'pageview',
+            page: url,
+          });
+        }
+      };
+
+      // Track initial page load
+      handleRouteChange(window.location.pathname);
+
+      // Track subsequent page views
+      router.events.on('routeChangeComplete', handleRouteChange);
+
+      // Clean up event listener
+      return () => {
+        router.events.off('routeChangeComplete', handleRouteChange);
+      };
+    }
+  }, [router.events]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
